@@ -18,7 +18,7 @@ object Ant:
   sealed trait Command extends Message // Enum needs an ad-hoc serializers...
   case object Stop extends Command
   private case class FrontendsRegistered(renders: List[ActorRef[AntsRender.Render]])
-      extends Command // ad-hoc message to handle fronted
+      extends Command // ad-hoc message to handle frontend
   private case object Move extends Command // and ADT enable also private messages
   val Key = ServiceKey[Stop.type]("Ant")
 
@@ -28,7 +28,7 @@ object Ant:
       frontends: List[ActorRef[AntsRender.Render]] = List.empty
   )(using random: Random): Behavior[Command] =
     Behaviors.setup[Command] { ctx =>
-      ctx.spawnAnonymous(manageFrontend(ctx.self)) // spawn the logic that handles subscribes of new fronted.
+      ctx.spawnAnonymous(manageFrontend(ctx.self)) // spawn the logic that handles subscribes of new frontend.
       ctx.system.receptionist ! Receptionist.Register(Ant.Key, ctx.self)
       Behaviors.withTimers { timers =>
         timers.startTimerAtFixedRate(Move, period)
